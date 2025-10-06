@@ -1,0 +1,20 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header";
+import TemplatesBrowser from "../components/TemplatesBrowser";
+---
+
+<Layout title="Browse Templates - Dotfiles Manager">
+  <Header client:load />
+
+  <div class="container py-12">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-2">Templates</h1>
+      <p class="text-lg text-muted-foreground">
+        Discover and download community-created dotfiles configurations
+      </p>
+    </div>
+
+    <TemplatesBrowser client:load />
+  </div>
+</Layout>

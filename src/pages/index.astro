@@ -1,25 +1,221 @@
 ---
-import '../styles/global.css';
-// Component Imports
-import Button from '../components/Button.astro';
-
-// Full Astro Component Syntax:
-// https://docs.astro.build/basics/astro-components/
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro + TailwindCSS</title>
-	</head>
+<Layout title="Dotfiles Manager - Complete Developer Environment Setup">
+  <Header client:load />
 
-	<body>
-		<div class="grid place-items-center h-screen content-center">
-			<Button>Tailwind Button in Astro!</Button>
-			<a href="/markdown-page" class="p-4 underline">Markdown is also supported...</a>
-		</div>
-	</body>
-</html>
+  <!-- Hero Section -->
+  <section class="container py-24 md:py-32">
+    <div
+      class="mx-auto flex max-w-[980px] flex-col items-center gap-4 text-center"
+    >
+      <Badge variant="outline" className="text-sm">
+        🚀 The complete solution for developer onboarding
+      </Badge>
+
+      <h1
+        class="text-4xl font-bold leading-tight tracking-tighter md:text-6xl lg:text-7xl"
+      >
+        Manage your dotfiles.<br />
+        <span class="text-primary">Share your setup.</span>
+      </h1>
+
+      <p class="max-w-[750px] text-lg text-muted-foreground sm:text-xl">
+        A comprehensive CLI, API, and community platform for managing
+        development environments. One command to set up everything for new
+        developers.
+      </p>
+
+      <div class="flex gap-4 mt-4">
+        <Button size="lg" asChild>
+          <a href="/templates">Browse Templates</a>
+        </Button>
+        <Button size="lg" variant="outline" asChild>
+          <a href="/docs/cli">Get Started</a>
+        </Button>
+      </div>
+
+      <div class="mt-8">
+        <pre
+          class="rounded-lg bg-muted p-4 text-left"><code>brew tap wsoule/tap
+brew install dotfiles
+dotfiles onboard</code></pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="container py-16 md:py-24 border-t">
+    <div class="mx-auto grid max-w-5xl gap-8 md:grid-cols-3">
+      <Card>
+        <CardHeader>
+          <div class="mb-2 text-4xl">🖥️</div>
+          <CardTitle>Powerful CLI</CardTitle>
+          <CardDescription>
+            30 commands for complete dotfiles management
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul class="space-y-2 text-sm text-muted-foreground">
+            <li>✓ Package management with Homebrew</li>
+            <li>✓ Dotfiles with GNU Stow</li>
+            <li>✓ Interactive TUI with 5 tabs</li>
+            <li>✓ Snapshot & rollback system</li>
+            <li>✓ GitHub SSH automation</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div class="mb-2 text-4xl">🌐</div>
+          <CardTitle>Share Templates</CardTitle>
+          <CardDescription>
+            Discover and share configuration templates
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul class="space-y-2 text-sm text-muted-foreground">
+            <li>✓ Browse community templates</li>
+            <li>✓ Search by tags & categories</li>
+            <li>✓ Create custom templates</li>
+            <li>✓ Favorite & track templates</li>
+            <li>✓ One-click downloads</li>
+          </ul>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div class="mb-2 text-4xl">⚡</div>
+          <CardTitle>Developer First</CardTitle>
+          <CardDescription>
+            Built for modern development workflows
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <ul class="space-y-2 text-sm text-muted-foreground">
+            <li>✓ Complete onboarding command</li>
+            <li>✓ Machine-specific profiles</li>
+            <li>✓ Pre/post operation hooks</li>
+            <li>✓ Health checks & diagnostics</li>
+            <li>✓ JSON configuration</li>
+          </ul>
+        </CardContent>
+      </Card>
+    </div>
+  </section>
+
+  <!-- Quick Start -->
+  <section class="container py-16 md:py-24 border-t">
+    <div class="mx-auto max-w-3xl">
+      <h2 class="text-3xl font-bold mb-8 text-center">Quick Start</h2>
+
+      <div class="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>1. Install the CLI</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre
+              class="rounded-lg bg-muted p-4"><code>brew tap wsoule/tap
+brew install dotfiles</code></pre>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>2. Complete Onboarding</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <pre
+              class="rounded-lg bg-muted p-4"><code>dotfiles onboard --email your@email.com</code></pre>
+            <p class="mt-4 text-sm text-muted-foreground">
+              This single command sets up GitHub SSH, installs essential
+              packages, and guides you through setup.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>3. Browse Templates</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div class="flex gap-2">
+              <Button asChild>
+                <a href="/templates">Explore Templates</a>
+              </Button>
+              <Button variant="outline" asChild>
+                <a href="/docs/cli">Read Docs</a>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="container py-16 md:py-24 border-t">
+    <div class="mx-auto max-w-2xl text-center">
+      <h2 class="text-3xl font-bold mb-4">Ready to manage your dotfiles?</h2>
+      <p class="text-lg text-muted-foreground mb-8">
+        Join developers using Dotfiles Manager to streamline their environment
+        setup.
+      </p>
+      <div class="flex gap-4 justify-center">
+        <Button size="lg" asChild>
+          <a href="/templates">Browse Templates</a>
+        </Button>
+        <Button size="lg" variant="outline" asChild>
+          <a href="https://github.com/wsoule/dotfiles" target="_blank">
+            View on GitHub
+          </a>
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t py-6 md:py-0">
+    <div
+      class="container flex flex-col items-center justify-between gap-4 md:h-16 md:flex-row"
+    >
+      <p
+        class="text-center text-sm leading-loose text-muted-foreground md:text-left"
+      >
+        Built with ❤️ for developers. Open source on{" "}
+        <a
+          href="https://github.com/wsoule/dotfiles"
+          target="_blank"
+          class="font-medium underline underline-offset-4"
+        >
+          GitHub
+        </a>
+      </p>
+      <div class="flex gap-4 text-sm text-muted-foreground">
+        <a href="/docs/cli" class="hover:text-foreground">CLI Docs</a>
+        <a href="/docs/api" class="hover:text-foreground">API Docs</a>
+        <a
+          href="https://github.com/wsoule/dotfiles/issues"
+          target="_blank"
+          class="hover:text-foreground"
+        >
+          Issues
+        </a>
+      </div>
+    </div>
+  </footer>
+</Layout>
