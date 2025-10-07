@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser, loginWithGitHub, logout, type User } from "@/lib/api";
+import { ModeToggle } from "./ModeToggle";
 
 export default function Header() {
   const [user, setUser] = useState<User | null>(null);
@@ -112,6 +113,7 @@ export default function Header() {
               Sign in with GitHub
             </Button>
           )}
+            <ModeToggle />
         </div>
       </div>
     </header>
