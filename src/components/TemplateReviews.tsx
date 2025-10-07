@@ -45,15 +45,17 @@ export default function TemplateReviews({ templateId }: TemplateReviewsProps) {
     try {
       setLoading(true);
       const [reviewsData, ratingData, userData] = await Promise.all([
-        getTemplateReviews(templateId),
-        getTemplateRating(templateId),
-        getCurrentUser(),
+        getTemplateReviews(templateId).catch(() => []),
+        getTemplateRating(templateId).catch(() => null),
+        getCurrentUser().catch(() => null),
       ]);
-      setReviews(reviewsData);
+      setReviews(reviewsData || []);
       setRating(ratingData);
       setUser(userData);
     } catch (error) {
       toast("Failed to load reviews");
+      setReviews([]);
+      setRating(null);
     } finally {
       setLoading(false);
     }

@@ -1,0 +1,422 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header";
+import { CodeBlock } from "@/components/CodeBlock";
+import { Badge } from "@/components/ui/badge";
+---
+
+<script is:inline>
+	const getThemePreference = () => {
+		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+			return localStorage.getItem('theme');
+		}
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+	};
+	const isDark = getThemePreference() === 'dark';
+	document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+
+	if (typeof localStorage !== 'undefined') {
+		const observer = new MutationObserver(() => {
+			const isDark = document.documentElement.classList.contains('dark');
+			localStorage.setItem('theme', isDark ? 'dark' : 'light');
+		});
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+	}
+</script>
+
+<Layout title="API Documentation - Dotfiles Manager">
+  <Header client:load />
+
+  <div class="container py-12 max-w-5xl">
+    <!-- Header -->
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold mb-4">API Documentation</h1>
+      <p class="text-xl text-muted-foreground">
+        RESTful API reference for the Dotfiles Manager platform
+      </p>
+    </div>
+
+    <!-- Table of Contents -->
+    <nav class="mb-12 rounded-lg border bg-card p-6">
+      <h2 class="text-lg font-semibold mb-4">Table of Contents</h2>
+      <ul class="space-y-2 text-sm">
+        <li><a href="#overview" class="text-primary hover:underline">Overview</a></li>
+        <li><a href="#authentication" class="text-primary hover:underline">Authentication</a></li>
+        <li><a href="#templates" class="text-primary hover:underline">Templates</a></li>
+        <li><a href="#organizations" class="text-primary hover:underline">Organizations</a></li>
+        <li><a href="#users" class="text-primary hover:underline">Users & Profiles</a></li>
+        <li><a href="#reviews" class="text-primary hover:underline">Reviews & Ratings</a></li>
+      </ul>
+    </nav>
+
+    <!-- Overview -->
+    <section id="overview" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">🌟 Overview</h2>
+
+      <div class="space-y-4 mb-6">
+        <p class="text-muted-foreground">
+          The Dotfiles Manager API is a modern, scalable REST API built with Go and Gin, featuring clean architecture principles,
+          GitHub authentication, and comprehensive template management.
+        </p>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-4">Base URL</h3>
+          <CodeBlock
+            code="https://your-api-domain.com"
+            client:load
+          />
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-4">Key Features</h3>
+          <ul class="space-y-2 text-muted-foreground">
+            <li>✓ GitHub OAuth 2.0 integration</li>
+            <li>✓ Organization management with role-based permissions</li>
+            <li>✓ 5-star rating system with reviews</li>
+            <li>✓ Advanced search & filtering</li>
+            <li>✓ Template versioning and metadata</li>
+            <li>✓ CORS support for frontend frameworks</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Authentication -->
+    <section id="authentication" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">🔐 Authentication</h2>
+
+      <div class="space-y-6">
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Initiate GitHub OAuth</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /auth/github"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Redirects to GitHub for OAuth authentication.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">OAuth Callback</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /auth/github/callback"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Handles GitHub OAuth callback and creates user session.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get Current User</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /auth/user"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Returns the currently authenticated user.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Sign Out</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /auth/logout"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Destroys the user session and signs out.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Templates -->
+    <section id="templates" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">📦 Templates</h2>
+
+      <div class="space-y-6">
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">List Templates</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/templates?search=web&featured=true&tags=docker,nodejs"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">
+            Get all templates with optional search, filtering, and sorting.
+          </p>
+          <div class="mt-3 text-sm">
+            <p class="font-semibold mb-2">Query Parameters:</p>
+            <ul class="space-y-1 text-muted-foreground ml-4">
+              <li>• <code>search</code> - Full-text search</li>
+              <li>• <code>featured</code> - Filter featured templates</li>
+              <li>• <code>tags</code> - Comma-separated tags</li>
+              <li>• <code>sort</code> - Sort by: downloads, name, date, author</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get Template Details</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/templates/:id"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get detailed information about a specific template.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Download Template</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/templates/:id/download"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Download template configuration as JSON.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Create Template</h3>
+          <Badge variant="outline" className="mb-3">POST</Badge>
+          <CodeBlock
+            code={`POST /api/templates
+
+{
+  "name": "My Web Dev Setup",
+  "metadata": {
+    "name": "My Web Dev Setup",
+    "description": "Full-stack development environment",
+    "author": "username",
+    "version": "1.0.0",
+    "tags": ["web", "nodejs", "docker"]
+  },
+  "brews": ["git", "node"],
+  "casks": ["visual-studio-code"],
+  "featured": false
+}`}
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Create a new template. Requires authentication.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get Template Rating</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/templates/:id/rating"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get aggregate rating and distribution for a template.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Organizations -->
+    <section id="organizations" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">🏢 Organizations</h2>
+
+      <div class="space-y-6">
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">List Organizations</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/organizations"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get all organizations.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Create Organization</h3>
+          <Badge variant="outline" className="mb-3">POST</Badge>
+          <CodeBlock
+            code={`POST /api/organizations
+
+{
+  "name": "My Team",
+  "description": "Our development team",
+  "avatar_url": "https://example.com/avatar.png",
+  "is_public": true
+}`}
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Create a new organization. Requires authentication.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get Organization Members</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/organizations/:id/members"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get all members of an organization.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Add Member</h3>
+          <Badge variant="outline" className="mb-3">POST</Badge>
+          <CodeBlock
+            code={`POST /api/organizations/:id/members
+
+{
+  "user_id": "user123",
+  "role": "admin"
+}`}
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">
+            Add a member to an organization. Roles: owner, admin, member.
+          </p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Create Invitation</h3>
+          <Badge variant="outline" className="mb-3">POST</Badge>
+          <CodeBlock
+            code={`POST /api/organizations/:id/invites
+
+{
+  "email": "user@example.com",
+  "role": "member"
+}`}
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Create an invitation token for a user.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Users -->
+    <section id="users" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">👤 Users & Profiles</h2>
+
+      <div class="space-y-6">
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get User by ID</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/users/:id"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get user profile by ID.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get User by Username</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/users/username/:username"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get user profile by username.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Add to Favorites</h3>
+          <Badge variant="outline" className="mb-3">POST</Badge>
+          <CodeBlock
+            code="POST /api/users/:id/favorites/:templateId"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Add a template to user favorites. Requires authentication.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get User Favorites</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/users/:id/favorites"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get all favorited templates for a user.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Reviews -->
+    <section id="reviews" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">⭐ Reviews & Ratings</h2>
+
+      <div class="space-y-6">
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Create Review</h3>
+          <Badge variant="outline" className="mb-3">POST</Badge>
+          <CodeBlock
+            code={`POST /api/reviews
+
+{
+  "template_id": "template123",
+  "rating": 5,
+  "comment": "Excellent setup! Works perfectly."
+}`}
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Create a new review. Rating: 1-5 stars. Requires authentication.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Get Template Reviews</h3>
+          <Badge variant="outline" className="mb-3">GET</Badge>
+          <CodeBlock
+            code="GET /api/templates/:id/reviews"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Get all reviews for a specific template.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Update Review</h3>
+          <Badge variant="outline" className="mb-3">PUT</Badge>
+          <CodeBlock
+            code={`PUT /api/reviews/:id
+
+{
+  "rating": 4,
+  "comment": "Updated review text"
+}`}
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Update your own review. Requires authentication.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Mark Review Helpful</h3>
+          <Badge variant="outline" className="mb-3">POST</Badge>
+          <CodeBlock
+            code="POST /api/reviews/:id/helpful"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Mark a review as helpful. Requires authentication.</p>
+        </div>
+
+        <div class="rounded-lg border bg-card p-6">
+          <h3 class="text-xl font-semibold mb-3">Delete Review</h3>
+          <Badge variant="outline" className="mb-3">DELETE</Badge>
+          <CodeBlock
+            code="DELETE /api/reviews/:id"
+            client:load
+          />
+          <p class="mt-3 text-sm text-muted-foreground">Delete your own review. Requires authentication.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Environment Variables -->
+    <section class="mb-12 rounded-lg border bg-card p-6">
+      <h2 class="text-2xl font-bold mb-4">🔧 Environment Variables</h2>
+      <ul class="space-y-2 text-sm text-muted-foreground">
+        <li>• <code>PORT</code> - Server port (default: 8080)</li>
+        <li>• <code>MONGODB_URI</code> - MongoDB connection string</li>
+        <li>• <code>GITHUB_CLIENT_ID</code> - GitHub OAuth app client ID</li>
+        <li>• <code>GITHUB_CLIENT_SECRET</code> - GitHub OAuth app client secret</li>
+        <li>• <code>OAUTH_REDIRECT_URL</code> - OAuth callback URL</li>
+      </ul>
+    </section>
+
+    <!-- Footer Navigation -->
+    <div class="flex justify-between pt-8 border-t">
+      <a href="/docs/cli" class="text-primary hover:underline">← CLI Documentation</a>
+      <a href="/" class="text-primary hover:underline">Back to Home →</a>
+    </div>
+  </div>
+</Layout>

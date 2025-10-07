@@ -640,13 +640,13 @@ export async function createReview(review: {
   rating: number;
   comment?: string;
 }) {
-  const response = await fetch(`${API_BASE_URL}/api/reviews`, {
+  const response = await fetch(`${API_BASE_URL}/api/templates/${review.template_id}/reviews`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     credentials: "include",
-    body: JSON.stringify(review),
+    body: JSON.stringify({ rating: review.rating, comment: review.comment }),
   });
   if (!response.ok) throw new Error("Failed to create review");
   return response.json() as Promise<Review>;

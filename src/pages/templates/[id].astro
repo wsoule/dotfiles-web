@@ -4,6 +4,7 @@ export const prerender = false; // Enable server-side rendering
 import Layout from "../../layouts/Layout.astro";
 import Header from "../../components/Header";
 import TemplateReviews from "../../components/TemplateReviews";
+import { Toaster } from "@/components/ui/sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -37,10 +38,7 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
     </div>
   </div>
 
-  <script define:vars={{ templateId: id, API_BASE_URL }}>
-    import { createRoot } from 'react-dom/client';
-    import { CopyButton } from '@/components/CopyButton';
-
+  <script type="module" define:vars={{ templateId: id, API_BASE_URL }}>
     async function loadTemplate() {
       try {
         const response = await fetch(`${API_BASE_URL}/api/templates/${templateId}`);
@@ -79,9 +77,18 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
             <div class="rounded-lg border bg-card p-6 mb-6">
               <h3 class="text-lg font-semibold mb-4">🚀 Install with CLI</h3>
               <div class="relative group">
-                <pre class="rounded-lg bg-muted p-4 pr-12 overflow-x-auto text-sm"><code>dotfiles template install ${template.id}</code></pre>
+                <pre class="rounded-lg bg-muted p-4 pr-12 overflow-x-auto text-sm"><code>dotfiles clone ${API_BASE_URL}/api/templates/${template.id}</code></pre>
                 <div class="absolute top-2 right-2">
-                  <div id="copy-btn-${template.id}"></div>
+                  <button
+                    onclick="copyToClipboard('dotfiles clone ${API_BASE_URL}/api/templates/${template.id}')"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-8 w-8"
+                    title="Copy to clipboard"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
+                      <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                    </svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -165,13 +172,6 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
             </div>
           </div>
         `;
-
-        // Hydrate the copy button
-        const copyBtnContainer = document.getElementById(`copy-btn-${template.id}`);
-        if (copyBtnContainer) {
-          const root = createRoot(copyBtnContainer);
-          root.render(CopyButton({ text: `dotfiles template install ${template.id}` }));
-        }
       } catch (error) {
         console.error("Error loading template:", error);
         const container = document.getElementById("template-container");
@@ -205,7 +205,17 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
       }
     }
 
+    function copyToClipboard(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        // Could add a toast notification here
+        console.log('Copied to clipboard');
+      }).catch(err => {
+        console.error('Failed to copy:', err);
+      });
+    }
+
     window.downloadTemplate = downloadTemplate;
+    window.copyToClipboard = copyToClipboard;
     loadTemplate();
   </script>
 </Layout>

@@ -207,12 +207,12 @@ import {
           return;
         }
 
-        const user = await response.json();
+        const data = await response.json();
         authCheck.style.display = 'none';
         form.style.display = 'block';
 
-        // Pre-fill author
-        window.currentUser = user;
+        // Pre-fill author - API returns { user: {...}, configured: boolean }
+        window.currentUser = data.user || data;
       } catch (error) {
         console.error('Auth check failed:', error);
       }

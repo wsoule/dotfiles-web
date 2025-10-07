@@ -1,0 +1,353 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header";
+import { CodeBlock } from "@/components/CodeBlock";
+import { PersonalizedCode } from "@/components/PersonalizedCode";
+import { Badge } from "@/components/ui/badge";
+---
+
+<script is:inline>
+	const getThemePreference = () => {
+		if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+			return localStorage.getItem('theme');
+		}
+		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+	};
+	const isDark = getThemePreference() === 'dark';
+	document.documentElement.classList[isDark ? 'add' : 'remove']('dark');
+
+	if (typeof localStorage !== 'undefined') {
+		const observer = new MutationObserver(() => {
+			const isDark = document.documentElement.classList.contains('dark');
+			localStorage.setItem('theme', isDark ? 'dark' : 'light');
+		});
+		observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+	}
+</script>
+
+<Layout title="CLI Documentation - Dotfiles Manager">
+  <Header client:load />
+
+  <div class="container py-12 max-w-5xl">
+    <!-- Header -->
+    <div class="mb-12">
+      <h1 class="text-4xl font-bold mb-4">CLI Documentation</h1>
+      <p class="text-xl text-muted-foreground">
+        Complete reference for the Dotfiles Manager command-line tool
+      </p>
+    </div>
+
+    <!-- Table of Contents -->
+    <nav class="mb-12 rounded-lg border bg-card p-6">
+      <h2 class="text-lg font-semibold mb-4">Table of Contents</h2>
+      <ul class="space-y-2 text-sm">
+        <li><a href="#installation" class="text-primary hover:underline">Installation</a></li>
+        <li><a href="#quick-start" class="text-primary hover:underline">Quick Start</a></li>
+        <li><a href="#onboarding" class="text-primary hover:underline">Developer Onboarding</a></li>
+        <li><a href="#templates" class="text-primary hover:underline">Templates & Sharing</a></li>
+        <li><a href="#commands" class="text-primary hover:underline">Command Reference</a></li>
+        <li><a href="#configuration" class="text-primary hover:underline">Configuration</a></li>
+      </ul>
+    </nav>
+
+    <!-- Installation -->
+    <section id="installation" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">📦 Installation</h2>
+
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Homebrew (Recommended)</h3>
+          <CodeBlock
+            code={`brew tap wsoule/tap
+brew install dotfiles`}
+            client:load
+          />
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3">One-liner Install</h3>
+          <CodeBlock
+            code="curl -fsSL https://raw.githubusercontent.com/wsoule/dotfiles-cli/main/install.sh | bash"
+            client:load
+          />
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Build from Source</h3>
+          <CodeBlock
+            code={`git clone https://github.com/wsoule/dotfiles-cli.git
+cd dotfiles-cli
+go build -o dotfiles`}
+            client:load
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Start -->
+    <section id="quick-start" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">🚀 Quick Start</h2>
+
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Setup from Repository</h3>
+          <PersonalizedCode
+            template="dotfiles setup https://github.com/your-username/your-dotfiles.git"
+            client:load
+          />
+          <p class="mt-3 text-muted-foreground">
+            Clones your repo to ~/.dotfiles/, creates stow/ and private/ directories, and sets up the proper structure.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3">For New Developers (Complete Setup)</h3>
+          <PersonalizedCode
+            template={`# Complete onboarding with everything included
+dotfiles onboard
+
+# Or with your GitHub email
+dotfiles onboard --email your@email.com`}
+            client:load
+          />
+          <p class="mt-3 text-muted-foreground">
+            Initializes configuration, sets up GitHub SSH keys, installs essential packages, and guides you through next steps.
+          </p>
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Manual Setup</h3>
+          <PersonalizedCode
+            template={`# 1. Initialize configuration
+dotfiles init
+
+# 2. Set up GitHub SSH
+dotfiles github setup --email your@email.com
+dotfiles github test
+
+# 3. Add packages
+dotfiles add git lazygit curl
+dotfiles add --type=cask visual-studio-code
+dotfiles add --type=stow vim zsh tmux
+
+# 4. Install everything
+dotfiles install
+dotfiles stow vim zsh`}
+            client:load
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Onboarding -->
+    <section id="onboarding" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">🎯 Developer Onboarding</h2>
+
+      <div class="rounded-lg border bg-card p-6 mb-6">
+        <h3 class="text-xl font-semibold mb-4">What the onboard command does:</h3>
+        <ul class="space-y-2 text-muted-foreground">
+          <li>✓ Initializes your dotfiles configuration</li>
+          <li>✓ Creates GitHub SSH keys and shows setup instructions</li>
+          <li>✓ Installs curated essential packages</li>
+          <li>✓ Guides you through next steps</li>
+        </ul>
+      </div>
+
+      <div class="rounded-lg border bg-card p-6">
+        <h3 class="text-xl font-semibold mb-4">Essential packages included:</h3>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div>
+            <h4 class="font-semibold mb-2">Command-line tools</h4>
+            <div class="flex flex-wrap gap-2">
+              <Badge variant="secondary">git</Badge>
+              <Badge variant="secondary">curl</Badge>
+              <Badge variant="secondary">wget</Badge>
+              <Badge variant="secondary">tree</Badge>
+              <Badge variant="secondary">jq</Badge>
+              <Badge variant="secondary">stow</Badge>
+              <Badge variant="secondary">gh</Badge>
+            </div>
+          </div>
+          <div>
+            <h4 class="font-semibold mb-2">GUI Applications</h4>
+            <div class="flex flex-wrap gap-2">
+              <Badge variant="secondary">visual-studio-code</Badge>
+              <Badge variant="secondary">ghostty</Badge>
+              <Badge variant="secondary">raycast</Badge>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Templates & Sharing -->
+    <section id="templates" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">🤝 Templates & Sharing</h2>
+
+      <div class="space-y-6">
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Using Templates</h3>
+          <CodeBlock
+            code={`# Browse available templates
+dotfiles templates list
+
+# Preview a template
+dotfiles templates show web-dev
+
+# Apply a template
+dotfiles clone template:web-dev
+
+# Discover community templates
+dotfiles templates discover --search "web-dev" --featured`}
+            client:load
+          />
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Create & Share Templates</h3>
+          <CodeBlock
+            code={`# Create a new template
+dotfiles templates create my-web-setup --extends web-dev --add-only
+
+# Push template to API
+dotfiles templates push my-template.json --public --featured
+
+# Validate template structure
+dotfiles templates validate my-template.json`}
+            client:load
+          />
+        </div>
+
+        <div>
+          <h3 class="text-xl font-semibold mb-3">Share Your Configuration</h3>
+          <PersonalizedCode
+            template={`# Share via GitHub Gist
+dotfiles share gist --name="My Web Dev Setup" --description="Full-stack config"
+
+# Export to file
+dotfiles share file my-config.json --name="My Setup"`}
+            client:load
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Command Reference -->
+    <section id="commands" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">📋 Command Reference</h2>
+
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse">
+          <thead>
+            <tr class="border-b">
+              <th class="text-left p-3 font-semibold">Command</th>
+              <th class="text-left p-3 font-semibold">Description</th>
+            </tr>
+          </thead>
+          <tbody class="text-sm">
+            <tr class="border-b">
+              <td class="p-3"><code>setup</code></td>
+              <td class="p-3 text-muted-foreground">Fork and setup a dotfiles repository</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>onboard</code></td>
+              <td class="p-3 text-muted-foreground">Complete developer onboarding and environment setup</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>github</code></td>
+              <td class="p-3 text-muted-foreground">Set up GitHub with SSH keys</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>templates</code></td>
+              <td class="p-3 text-muted-foreground">Create, manage and discover templates</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>share</code></td>
+              <td class="p-3 text-muted-foreground">Share your configuration with others</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>clone</code></td>
+              <td class="p-3 text-muted-foreground">Clone a shared configuration</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>add</code></td>
+              <td class="p-3 text-muted-foreground">Add packages to your configuration</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>remove</code></td>
+              <td class="p-3 text-muted-foreground">Remove packages from your configuration</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>install</code></td>
+              <td class="p-3 text-muted-foreground">Generate Brewfile and install packages</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>stow</code></td>
+              <td class="p-3 text-muted-foreground">Stow dotfile packages using GNU Stow</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>status</code></td>
+              <td class="p-3 text-muted-foreground">Check package installation status</td>
+            </tr>
+            <tr class="border-b">
+              <td class="p-3"><code>backup</code></td>
+              <td class="p-3 text-muted-foreground">Backup your configuration to a file</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Configuration -->
+    <section id="configuration" class="mb-12">
+      <h2 class="text-3xl font-bold mb-6">📁 Configuration</h2>
+
+      <p class="mb-4 text-muted-foreground">
+        Your configuration is stored as simple JSON at <code>~/.dotfiles/config.json</code>:
+      </p>
+
+      <CodeBlock
+        code={`{
+  "brews": [
+    "git",
+    "lazygit"
+  ],
+  "casks": [
+    "visual-studio-code"
+  ],
+  "taps": [
+    "homebrew/cask-fonts"
+  ],
+  "stow": [
+    "vim",
+    "zsh",
+    "tmux"
+  ]
+}`}
+        client:load
+      />
+
+      <div class="mt-6 rounded-lg border bg-card p-6">
+        <h3 class="text-xl font-semibold mb-4">Directory Structure</h3>
+        <pre class="text-sm text-muted-foreground overflow-x-auto">{`~/.dotfiles/
+├── config.json          # Your package configuration
+├── .gitignore           # Excludes private/ directory
+├── stow/                # Stow packages directory
+│   ├── config/          # Auto-created .config package
+│   ├── vim/
+│   ├── zsh/
+│   └── tmux/
+└── private/             # Private files (excluded from git)
+    ├── .env.local
+    ├── .gitconfig.local
+    └── .ssh/`}</pre>
+      </div>
+    </section>
+
+    <!-- Footer Navigation -->
+    <div class="flex justify-between pt-8 border-t">
+      <a href="/" class="text-primary hover:underline">← Back to Home</a>
+      <a href="/docs/api" class="text-primary hover:underline">API Documentation →</a>
+    </div>
+  </div>
+</Layout>
