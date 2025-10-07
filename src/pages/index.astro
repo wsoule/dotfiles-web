@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { CodeBlock } from "@/components/CodeBlock";
 ---
 <script is:inline>
 	const getThemePreference = () => {
@@ -65,10 +66,12 @@ import { Badge } from "@/components/ui/badge";
       </div>
 
       <div class="mt-8">
-        <pre
-          class="rounded-lg bg-muted p-4 text-left"><code>brew tap wsoule/tap
+        <CodeBlock
+          code={`brew tap wsoule/tap
 brew install dotfiles
-dotfiles onboard</code></pre>
+dotfiles onboard`}
+          client:load
+        />
       </div>
     </div>
   </section>
@@ -146,9 +149,11 @@ dotfiles onboard</code></pre>
             <CardTitle>1. Install the CLI</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre
-              class="rounded-lg bg-muted p-4"><code>brew tap wsoule/tap
-brew install dotfiles</code></pre>
+            <CodeBlock
+              code={`brew tap wsoule/tap
+brew install dotfiles`}
+              client:load
+            />
           </CardContent>
         </Card>
 
@@ -157,8 +162,10 @@ brew install dotfiles</code></pre>
             <CardTitle>2. Complete Onboarding</CardTitle>
           </CardHeader>
           <CardContent>
-            <pre
-              class="rounded-lg bg-muted p-4"><code>dotfiles onboard --email your@email.com</code></pre>
+            <CodeBlock
+              code="dotfiles onboard --email your@email.com"
+              client:load
+            />
             <p class="mt-4 text-sm text-muted-foreground">
               This single command sets up GitHub SSH, installs essential
               packages, and guides you through setup.
