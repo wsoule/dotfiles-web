@@ -133,6 +133,35 @@ import {
         </CardContent>
       </Card>
 
+      <!-- Package Hooks -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Package Hooks (Optional)</CardTitle>
+          <CardDescription>
+            Add post-install commands for specific packages. Format: package:command (one per line)
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">
+              Post-Install Hooks
+              <span class="text-xs text-muted-foreground font-normal ml-2">
+                Example: starship:echo 'eval "$(starship init bash)"' >> ~/.bashrc
+              </span>
+            </label>
+            <textarea
+              id="template-package-hooks"
+              placeholder="starship:echo 'eval &quot;$(starship init bash)&quot;' >> ~/.bashrc&#10;zoxide:echo 'eval &quot;$(zoxide init bash)&quot;' >> ~/.bashrc&#10;fzf:$(brew --prefix)/opt/fzf/install --key-bindings --completion --no-update-rc"
+              rows="6"
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+            ></textarea>
+            <p class="text-xs text-muted-foreground mt-2">
+              💡 These commands run automatically after each package is installed
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       <!-- Visibility -->
       <Card>
         <CardHeader>
@@ -246,6 +275,30 @@ import {
         .filter(Boolean);
       const isPublic = document.getElementById('template-public').checked;
 
+      // Parse package hooks
+      const packageHooksInput = document.getElementById('template-package-hooks').value;
+      const packageConfigs = {};
+
+      if (packageHooksInput.trim()) {
+        packageHooksInput.split('\n').forEach(line => {
+          line = line.trim();
+          if (!line) return;
+
+          const colonIndex = line.indexOf(':');
+          if (colonIndex === -1) return;
+
+          const packageName = line.substring(0, colonIndex).trim();
+          const command = line.substring(colonIndex + 1).trim();
+
+          if (packageName && command) {
+            if (!packageConfigs[packageName]) {
+              packageConfigs[packageName] = { post_install: [] };
+            }
+            packageConfigs[packageName].post_install.push(command);
+          }
+        });
+      }
+
       const template = {
         name: name,
         metadata: {
@@ -260,7 +313,8 @@ import {
         taps: taps,
         stow: stow,
         public: isPublic,
-        featured: false
+        featured: false,
+        package_configs: Object.keys(packageConfigs).length > 0 ? packageConfigs : undefined
       };
 
       try {

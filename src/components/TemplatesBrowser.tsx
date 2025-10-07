@@ -223,6 +223,16 @@ export default function TemplatesBrowser() {
                       </div>
                     </div>
 
+                    {/* Hooks Indicator */}
+                    {template.package_configs && Object.keys(template.package_configs).length > 0 && (
+                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                        <span className="text-base">🪝</span>
+                        <span>
+                          {Object.keys(template.package_configs).length} package{Object.keys(template.package_configs).length !== 1 ? 's' : ''} with hooks
+                        </span>
+                      </div>
+                    )}
+
                     {/* Tags */}
                     {template.metadata.tags && template.metadata.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1">

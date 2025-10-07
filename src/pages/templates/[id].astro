@@ -128,6 +128,38 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
                 </div>
               </div>
 
+              <!-- Package Hooks Card -->
+              ${template.package_configs && Object.keys(template.package_configs).length > 0 ? `
+              <div class="rounded-lg border bg-card">
+                <div class="p-6">
+                  <h3 class="text-lg font-semibold mb-4">🪝 Package Hooks</h3>
+                  <div class="space-y-4">
+                    ${Object.entries(template.package_configs).map(([pkg, config]) => `
+                      <div class="rounded-lg bg-muted p-3">
+                        <h4 class="text-sm font-semibold mb-2">${pkg}</h4>
+                        ${config.pre_install && config.pre_install.length > 0 ? `
+                          <div class="mb-2">
+                            <p class="text-xs text-muted-foreground mb-1">Pre-install:</p>
+                            ${config.pre_install.map(hook => `
+                              <code class="block text-xs bg-background rounded p-2 mb-1">${hook}</code>
+                            `).join('')}
+                          </div>
+                        ` : ''}
+                        ${config.post_install && config.post_install.length > 0 ? `
+                          <div>
+                            <p class="text-xs text-muted-foreground mb-1">Post-install:</p>
+                            ${config.post_install.map(hook => `
+                              <code class="block text-xs bg-background rounded p-2 mb-1">${hook}</code>
+                            `).join('')}
+                          </div>
+                        ` : ''}
+                      </div>
+                    `).join('')}
+                  </div>
+                </div>
+              </div>
+              ` : ''}
+
               <!-- Metadata Card -->
               <div class="rounded-lg border bg-card">
                 <div class="p-6">

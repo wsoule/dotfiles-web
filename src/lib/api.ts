@@ -15,6 +15,12 @@ export interface ShareMetadata {
   version: string;
 }
 
+// Package Config
+export interface PackageConfig {
+  post_install?: string[];
+  pre_install?: string[];
+}
+
 // Template Types
 export interface Template {
   taps: string[];
@@ -28,6 +34,7 @@ export interface Template {
   public: boolean;
   featured: boolean;
   organization_id?: string;
+  package_configs?: Record<string, PackageConfig>;
 }
 
 export interface StoredTemplate {
