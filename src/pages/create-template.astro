@@ -1,0 +1,291 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Header from "../components/Header";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+---
+
+<Layout title="Create Template - Dotfiles Manager">
+  <Header client:load />
+
+  <div class="container py-12 max-w-4xl">
+    <div class="mb-8">
+      <h1 class="text-4xl font-bold mb-2">Create Template</h1>
+      <p class="text-lg text-muted-foreground">
+        Share your dotfiles configuration with the community
+      </p>
+    </div>
+
+    <div id="auth-check" class="mb-6">
+      <div class="animate-pulse rounded-lg bg-muted h-12"></div>
+    </div>
+
+    <form id="create-template-form" class="space-y-6" style="display: none;">
+      <!-- Basic Info -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Basic Information</CardTitle>
+          <CardDescription>
+            Provide details about your template
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Template Name *</label>
+            <input
+              type="text"
+              id="template-name"
+              required
+              placeholder="My Awesome Setup"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Description *</label>
+            <textarea
+              id="template-description"
+              required
+              placeholder="Describe what this template includes..."
+              rows="3"
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Version</label>
+            <input
+              type="text"
+              id="template-version"
+              value="1.0.0"
+              placeholder="1.0.0"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Tags (comma-separated)</label>
+            <input
+              type="text"
+              id="template-tags"
+              placeholder="javascript, react, nodejs"
+              class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Packages -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Packages</CardTitle>
+          <CardDescription>
+            Define Homebrew packages and applications
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div>
+            <label class="block text-sm font-medium mb-2">Homebrew Formulae (one per line)</label>
+            <textarea
+              id="template-brews"
+              placeholder="git&#10;node&#10;python&#10;vim"
+              rows="5"
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Cask Applications (one per line)</label>
+            <textarea
+              id="template-casks"
+              placeholder="visual-studio-code&#10;docker&#10;slack&#10;spotify"
+              rows="5"
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Taps (one per line)</label>
+            <textarea
+              id="template-taps"
+              placeholder="homebrew/cask&#10;homebrew/cask-fonts"
+              rows="3"
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+            ></textarea>
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium mb-2">Stow Directories (one per line)</label>
+            <textarea
+              id="template-stow"
+              placeholder=".config&#10;.vim&#10;.zsh"
+              rows="3"
+              class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+            ></textarea>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Visibility -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Visibility</CardTitle>
+          <CardDescription>
+            Control who can see your template
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              id="template-public"
+              checked
+              class="h-4 w-4 rounded border-gray-300"
+            />
+            <label for="template-public" class="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+              Make this template public
+            </label>
+          </div>
+        </CardContent>
+      </Card>
+
+      <!-- Submit -->
+      <div class="flex gap-4">
+        <button
+          type="submit"
+          class="flex-1 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+        >
+          Create Template
+        </button>
+        <a
+          href="/templates"
+          class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2"
+        >
+          Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
+
+    async function checkAuth() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/auth/user`, {
+          credentials: 'include'
+        });
+
+        const authCheck = document.getElementById('auth-check');
+        const form = document.getElementById('create-template-form');
+
+        if (!response.ok) {
+          authCheck.innerHTML = `
+            <div class="rounded-lg border bg-card p-8 text-center">
+              <h2 class="text-2xl font-bold mb-4">Sign in required</h2>
+              <p class="text-muted-foreground mb-6">
+                Please sign in with GitHub to create templates
+              </p>
+              <button
+                onclick="window.location.href='${API_BASE_URL}/auth/github'"
+                class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+              >
+                <svg class="mr-2 h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
+                </svg>
+                Sign in with GitHub
+              </button>
+            </div>
+          `;
+          return;
+        }
+
+        const user = await response.json();
+        authCheck.style.display = 'none';
+        form.style.display = 'block';
+
+        // Pre-fill author
+        window.currentUser = user;
+      } catch (error) {
+        console.error('Auth check failed:', error);
+      }
+    }
+
+    document.getElementById('create-template-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById('template-name').value;
+      const description = document.getElementById('template-description').value;
+      const version = document.getElementById('template-version').value || '1.0.0';
+      const tags = document.getElementById('template-tags').value
+        .split(',')
+        .map(t => t.trim())
+        .filter(Boolean);
+      const brews = document.getElementById('template-brews').value
+        .split('\n')
+        .map(b => b.trim())
+        .filter(Boolean);
+      const casks = document.getElementById('template-casks').value
+        .split('\n')
+        .map(c => c.trim())
+        .filter(Boolean);
+      const taps = document.getElementById('template-taps').value
+        .split('\n')
+        .map(t => t.trim())
+        .filter(Boolean);
+      const stow = document.getElementById('template-stow').value
+        .split('\n')
+        .map(s => s.trim())
+        .filter(Boolean);
+      const isPublic = document.getElementById('template-public').checked;
+
+      const template = {
+        name: name,
+        metadata: {
+          name: name,
+          description: description,
+          author: window.currentUser?.username || 'unknown',
+          version: version,
+          tags: tags
+        },
+        brews: brews,
+        casks: casks,
+        taps: taps,
+        stow: stow,
+        public: isPublic,
+        featured: false
+      };
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/templates`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'include',
+          body: JSON.stringify(template)
+        });
+
+        if (!response.ok) {
+          const error = await response.json();
+          throw new Error(error.error || 'Failed to create template');
+        }
+
+        const created = await response.json();
+        alert('Template created successfully!');
+        window.location.href = `/templates/${created.id}`;
+      } catch (error) {
+        alert(`Failed to create template: ${error.message}`);
+      }
+    });
+
+    checkAuth();
+  </script>
+</Layout>

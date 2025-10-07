@@ -1,0 +1,147 @@
+---
+// OAuth callback handler
+// This page receives the OAuth code from GitHub and exchanges it with the backend
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
+---
+
+<html>
+<head>
+  <title>Authenticating...</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #09090b;
+      color: #fafafa;
+    }
+    .container {
+      text-align: center;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 20px;
+      border: 4px solid #27272a;
+      border-top-color: #fafafa;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="spinner"></div>
+    <h2>Signing you in...</h2>
+    <p id="status">Authenticating with GitHub</p>
+    <div id="debug" style="margin-top: 20px; padding: 20px; background: #18181b; border-radius: 8px; text-align: left; font-size: 12px; font-family: monospace; max-width: 600px; display: none;">
+      <div style="margin-bottom: 10px; color: #a1a1aa;">Debug Info:</div>
+      <div id="debug-content"></div>
+    </div>
+  </div>
+
+  <script define:vars={{ API_BASE_URL }}>
+    function showDebug(info) {
+      const debug = document.getElementById('debug');
+      const debugContent = document.getElementById('debug-content');
+      debug.style.display = 'block';
+      debugContent.innerHTML += `<div style="margin: 4px 0; color: #fafafa;">${info}</div>`;
+    }
+
+    async function handleCallback() {
+      const status = document.getElementById('status');
+
+      try {
+        showDebug(`API_BASE_URL: ${API_BASE_URL}`);
+        // Get the authorization code from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        const state = urlParams.get('state');
+        const error = urlParams.get('error');
+
+        showDebug(`Code received: ${code ? 'Yes' : 'No'}`);
+        showDebug(`State: ${state || 'None'}`);
+        showDebug(`Error: ${error || 'None'}`);
+
+        if (error) {
+          throw new Error(`GitHub OAuth error: ${error}`);
+        }
+
+        if (!code) {
+          throw new Error('No authorization code received');
+        }
+
+        status.textContent = 'Exchanging authorization code...';
+
+        // Send the code to your backend
+        const backendUrl = `${API_BASE_URL}/auth/github/callback?code=${code}${state ? '&state=' + state : ''}`;
+        showDebug(`Calling: ${backendUrl}`);
+
+        console.log('Sending code to backend:', code);
+        const response = await fetch(backendUrl, {
+          method: 'GET',
+          credentials: 'include', // Important: include cookies
+        });
+
+        console.log('Backend response status:', response.status);
+        showDebug(`Response status: ${response.status}`);
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error('Backend error:', errorData);
+          showDebug(`Error response: ${errorData.substring(0, 200)}`);
+          throw new Error(`Authentication failed: ${response.status} - ${errorData}`);
+        }
+
+        const contentType = response.headers.get('content-type');
+        showDebug(`Content-Type: ${contentType}`);
+
+        if (!contentType || !contentType.includes('application/json')) {
+          const textData = await response.text();
+          showDebug(`Non-JSON response: ${textData.substring(0, 200)}`);
+          throw new Error('Backend returned non-JSON response (probably a redirect). See BACKEND_OPTIONS.md for solutions.');
+        }
+
+        const data = await response.json();
+        console.log('Backend response:', data);
+        showDebug(`Success: ${JSON.stringify(data).substring(0, 100)}`);
+
+        status.textContent = 'Success! Redirecting...';
+
+        // Redirect to home page or return URL
+        let returnTo = sessionStorage.getItem('oauth_return_to') || '/';
+        sessionStorage.removeItem('oauth_return_to');
+
+        // Ensure returnTo is a valid string
+        if (typeof returnTo !== 'string' || !returnTo || returnTo === '[object Object]') {
+          returnTo = '/';
+        }
+
+        showDebug(`Redirecting to: ${returnTo}`);
+
+        setTimeout(() => {
+          window.location.href = returnTo;
+        }, 500);
+
+      } catch (error) {
+        console.error('OAuth callback error:', error);
+        status.textContent = 'Authentication failed';
+        document.querySelector('.container').innerHTML = `
+          <h2>Authentication Failed</h2>
+          <p style="color: #ef4444; margin: 20px 0;">${error.message}</p>
+          <a href="/" style="color: #3b82f6; text-decoration: none;">← Return to Home</a>
+        `;
+      }
+    }
+
+    handleCallback();
+  </script>
+</body>
+</html>

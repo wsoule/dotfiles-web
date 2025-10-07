@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import {
-  addFavorite,
   downloadTemplate,
   getTemplates,
+  getCurrentUser,
+  addFavorite,
   removeFavorite,
   type Template,
+  type User,
 } from "@/lib/api";
 import {
   Card,
@@ -28,14 +30,16 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 
 export default function TemplatesBrowser() {
-  const [templates, setTemplates] = useState<Template[]>([]);
+  const [templates, setTemplates] = useState<StoredTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState<string>("all");
   const [showFeaturedOnly, setShowFeaturedOnly] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
     loadTemplates();
+    getCurrentUser().then(setUser).catch(() => setUser(null));
   }, [showFeaturedOnly]);
 
   const loadTemplates = async () => {
@@ -55,7 +59,7 @@ export default function TemplatesBrowser() {
     }
   };
 
-  const handleDownload = async (template: Template) => {
+  const handleDownload = async (template: StoredTemplate) => {
     try {
       const data = await downloadTemplate(template.id);
       const blob = new Blob([JSON.stringify(data, null, 2)], {
@@ -79,10 +83,11 @@ export default function TemplatesBrowser() {
   };
 
   const allTags = Array.from(
-    new Set(templates.flatMap((t) => t.metadata.tags)),
+    new Set(templates.flatMap((t) => t?.metadata.tags)),
   ).sort();
 
-  const filteredTemplates = templates.filter((template) => {
+  const filteredTemplates = templates.filter((storedTemplate) => {
+    const template = storedTemplate;
     const matchesSearch = template.metadata.name
       .toLowerCase()
       .includes(searchQuery.toLowerCase()) ||
@@ -173,76 +178,86 @@ export default function TemplatesBrowser() {
         )
         : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {filteredTemplates.map((template) => (
-              <Card key={template.id} className="flex flex-col">
-                <CardHeader>
-                  <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="text-lg">
-                      {template.name}
-                    </CardTitle>
-                    {template.featured && (
-                      <Badge variant="default" className="shrink-0">
-                        ⭐ Featured
-                      </Badge>
+            {filteredTemplates.map((storedTemplate) => {
+              const template = storedTemplate;
+              return (
+                <Card key={storedTemplate.id} className="flex flex-col">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-2">
+                      <CardTitle className="text-lg">
+                        {template.metadata.name}
+                      </CardTitle>
+                      {template.featured && (
+                        <Badge variant="default" className="shrink-0">
+                          ⭐ Featured
+                        </Badge>
+                      )}
+                    </div>
+                    <CardDescription>
+                      {template.metadata.description}
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="flex-1 space-y-4">
+                    {/* Stats */}
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="rounded-lg bg-muted p-2">
+                        <div className="text-sm font-medium">
+                          {template.brews.length}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Brews</div>
+                      </div>
+                      <div className="rounded-lg bg-muted p-2">
+                        <div className="text-sm font-medium">
+                          {template.casks.length}
+                        </div>
+                        <div className="text-xs text-muted-foreground">Casks</div>
+                      </div>
+                      <div className="rounded-lg bg-muted p-2">
+                        <div className="text-sm font-medium">
+                          {storedTemplate.downloads}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          Downloads
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tags */}
+                    {template.metadata.tags && template.metadata.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {template.metadata.tags.map((tag) => (
+                          <Badge key={tag} variant="secondary" className="text-xs">
+                            {tag}
+                          </Badge>
+                        ))}
+                      </div>
                     )}
-                  </div>
-                  <CardDescription>
-                    {template.metadata.description}
-                  </CardDescription>
-                </CardHeader>
 
-                <CardContent className="flex-1 space-y-4">
-                  {/* Stats */}
-                  <div className="grid grid-cols-3 gap-2 text-center">
-                    <div className="rounded-lg bg-muted p-2">
-                      <div className="text-sm font-medium">
-                        {template.brews.length}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Brews</div>
+                    {/* Author */}
+                    <div className="text-xs text-muted-foreground">
+                      by {template.metadata.author} • v{template.metadata.version}
                     </div>
-                    <div className="rounded-lg bg-muted p-2">
-                      <div className="text-sm font-medium">
-                        {template.casks.length}
-                      </div>
-                      <div className="text-xs text-muted-foreground">Casks</div>
-                    </div>
-                    <div className="rounded-lg bg-muted p-2">
-                      <div className="text-sm font-medium">
-                        {template.downloads}
-                      </div>
-                      <div className="text-xs text-muted-foreground">
-                        Downloads
-                      </div>
-                    </div>
-                  </div>
+                  </CardContent>
 
-                  {/* Tags */}
-                  <div className="flex flex-wrap gap-1">
-                    {template.metadata.tags.map((tag) => (
-                      <Badge key={tag} variant="secondary" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                  </div>
-
-                  {/* Author */}
-                  <div className="text-xs text-muted-foreground">
-                    by {template.metadata.author} • v
-                    {template.metadata.version}
-                  </div>
-                </CardContent>
-
-                <CardFooter>
-                  <Button
-                    className="w-full"
-                    onClick={() =>
-                      handleDownload(template)}
-                  >
-                    Download Template
-                  </Button>
-                </CardFooter>
-              </Card>
-            ))}
+                  <CardFooter className="flex gap-2">
+                    <Button
+                      className="flex-1"
+                      variant="outline"
+                      onClick={() => window.location.href = `/templates/${storedTemplate.id}`}
+                    >
+                      View Details
+                    </Button>
+                    <Button
+                      className="flex-1"
+                      onClick={() => handleDownload(storedTemplate)}
+                    >
+                      Download
+                    </Button>
+                  </CardFooter>
+                </Card>
+              );
+            })}
           </div>
         )}
     </div>

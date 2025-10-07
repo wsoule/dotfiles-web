@@ -1,0 +1,189 @@
+---
+export const prerender = false; // Enable server-side rendering
+
+import Layout from "../../layouts/Layout.astro";
+import Header from "../../components/Header";
+import TemplateReviews from "../../components/TemplateReviews";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+
+const { id } = Astro.params;
+const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
+---
+
+<Layout title="Template Details - Dotfiles Manager">
+  <Header client:load />
+
+  <div class="container py-12">
+    <div id="template-container" class="space-y-8">
+      <!-- Loading state -->
+      <div class="animate-pulse space-y-4">
+        <div class="h-12 bg-muted rounded w-3/4"></div>
+        <div class="h-24 bg-muted rounded"></div>
+      </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-12">
+      <TemplateReviews templateId={id} client:load />
+    </div>
+  </div>
+
+  <script define:vars={{ templateId: id, API_BASE_URL }}>
+    async function loadTemplate() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/templates/${templateId}`);
+        if (!response.ok) throw new Error("Failed to fetch template");
+
+        const template = await response.json();
+
+        // Render template details
+        const container = document.getElementById("template-container");
+        container.innerHTML = `
+          <div>
+            <div class="flex items-start justify-between mb-6">
+              <div>
+                <h1 class="text-4xl font-bold mb-2">${template.metadata?.name || template.name}</h1>
+                <p class="text-lg text-muted-foreground">${template.metadata?.description || 'No description'}</p>
+              </div>
+              ${template.featured ? '<span class="inline-flex items-center rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground">⭐ Featured</span>' : ''}
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-3 mb-8">
+              <div class="rounded-lg border bg-card p-6">
+                <div class="text-3xl font-bold">${template.downloads || 0}</div>
+                <div class="text-sm text-muted-foreground">Downloads</div>
+              </div>
+              <div class="rounded-lg border bg-card p-6">
+                <div class="text-3xl font-bold">${template.brews?.length || 0}</div>
+                <div class="text-sm text-muted-foreground">Brew Packages</div>
+              </div>
+              <div class="rounded-lg border bg-card p-6">
+                <div class="text-3xl font-bold">${template.casks?.length || 0}</div>
+                <div class="text-sm text-muted-foreground">Cask Apps</div>
+              </div>
+            </div>
+
+            <div class="grid gap-6 md:grid-cols-2">
+              <!-- Packages Card -->
+              <div class="rounded-lg border bg-card">
+                <div class="p-6">
+                  <h3 class="text-lg font-semibold mb-4">📦 Packages</h3>
+
+                  ${template.brews && template.brews.length > 0 ? `
+                    <div class="mb-4">
+                      <h4 class="text-sm font-medium mb-2">Homebrew Formulae</h4>
+                      <div class="flex flex-wrap gap-2">
+                        ${template.brews.map(brew => `<span class="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium">${brew}</span>`).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+
+                  ${template.casks && template.casks.length > 0 ? `
+                    <div class="mb-4">
+                      <h4 class="text-sm font-medium mb-2">Cask Applications</h4>
+                      <div class="flex flex-wrap gap-2">
+                        ${template.casks.map(cask => `<span class="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium">${cask}</span>`).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+
+                  ${template.taps && template.taps.length > 0 ? `
+                    <div>
+                      <h4 class="text-sm font-medium mb-2">Taps</h4>
+                      <div class="flex flex-wrap gap-2">
+                        ${template.taps.map(tap => `<span class="inline-flex items-center rounded-md bg-secondary px-2 py-1 text-xs font-medium">${tap}</span>`).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+                </div>
+              </div>
+
+              <!-- Metadata Card -->
+              <div class="rounded-lg border bg-card">
+                <div class="p-6">
+                  <h3 class="text-lg font-semibold mb-4">ℹ️ Information</h3>
+
+                  <div class="space-y-3 text-sm">
+                    <div>
+                      <span class="text-muted-foreground">Author:</span>
+                      <span class="ml-2 font-medium">${template.metadata?.author || 'Unknown'}</span>
+                    </div>
+                    <div>
+                      <span class="text-muted-foreground">Version:</span>
+                      <span class="ml-2 font-medium">${template.metadata?.version || '1.0.0'}</span>
+                    </div>
+                    <div>
+                      <span class="text-muted-foreground">Created:</span>
+                      <span class="ml-2 font-medium">${new Date(template.created_at).toLocaleDateString()}</span>
+                    </div>
+                    <div>
+                      <span class="text-muted-foreground">Updated:</span>
+                      <span class="ml-2 font-medium">${new Date(template.updated_at).toLocaleDateString()}</span>
+                    </div>
+                  </div>
+
+                  ${template.metadata?.tags && template.metadata.tags.length > 0 ? `
+                    <div class="mt-4">
+                      <h4 class="text-sm font-medium mb-2">Tags</h4>
+                      <div class="flex flex-wrap gap-2">
+                        ${template.metadata.tags.map(tag => `<span class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">${tag}</span>`).join('')}
+                      </div>
+                    </div>
+                  ` : ''}
+
+                  <button
+                    onclick="downloadTemplate('${template.id}', '${template.metadata?.name || template.name}')"
+                    class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2 w-full mt-6"
+                  >
+                    Download Template
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      } catch (error) {
+        console.error("Error loading template:", error);
+        const container = document.getElementById("template-container");
+        container.innerHTML = `
+          <div class="rounded-lg border border-destructive bg-destructive/10 p-6 text-center">
+            <p class="text-destructive">Failed to load template. Please try again.</p>
+          </div>
+        `;
+      }
+    }
+
+    async function downloadTemplate(id, name) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/templates/${id}/download`, {
+          credentials: 'include'
+        });
+        if (!response.ok) throw new Error("Failed to download");
+
+        const data = await response.json();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${name.replace(/\s+/g, '-').toLowerCase()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      } catch (error) {
+        alert('Failed to download template');
+      }
+    }
+
+    window.downloadTemplate = downloadTemplate;
+    loadTemplate();
+  </script>
+</Layout>

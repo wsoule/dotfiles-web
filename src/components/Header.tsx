@@ -41,16 +41,16 @@ export default function Header() {
               Templates
             </a>
             <a
+              href="/organizations"
+              className="text-sm font-medium transition-colors hover:text-primary"
+            >
+              Organizations
+            </a>
+            <a
               href="/docs/cli"
               className="text-sm font-medium transition-colors hover:text-primary"
             >
-              CLI Docs
-            </a>
-            <a
-              href="/docs/api"
-              className="text-sm font-medium transition-colors hover:text-primary"
-            >
-              API Docs
+              Docs
             </a>
           </nav>
         </div>
@@ -66,9 +66,9 @@ export default function Header() {
                   className="relative h-8 w-8 rounded-full"
                 >
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.avatar_url} alt={user.username} />
+                    <AvatarImage src={user.avatar_url} alt={user.username || user.name} />
                     <AvatarFallback>
-                      {user.username[0].toUpperCase()}
+                      {(user.username || user.name || 'U')[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                 </Button>
@@ -76,21 +76,23 @@ export default function Header() {
               <DropdownMenuContent align="end">
                 <div className="flex items-center justify-start gap-2 p-2">
                   <div className="flex flex-col space-y-1 leading-none">
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">
-                      @{user.username}
-                    </p>
+                    <p className="font-medium">{user.name || user.username || 'User'}</p>
+                    {user.username && (
+                      <p className="text-sm text-muted-foreground">
+                        @{user.username}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild>
-                  <a href="/my-templates">My Templates</a>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <a href="/favorites">Favorites</a>
-                </DropdownMenuItem>
-                <DropdownMenuItem asChild>
                   <a href="/create-template">Create Template</a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href="/favorites">My Favorites</a>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <a href="/organizations">My Organizations</a>
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>

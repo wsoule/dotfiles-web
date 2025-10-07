@@ -8,11 +8,19 @@ import TemplatesBrowser from "../components/TemplatesBrowser";
   <Header client:load />
 
   <div class="container py-12">
-    <div class="mb-8">
-      <h1 class="text-4xl font-bold mb-2">Templates</h1>
-      <p class="text-lg text-muted-foreground">
-        Discover and download community-created dotfiles configurations
-      </p>
+    <div class="mb-8 flex items-start justify-between">
+      <div>
+        <h1 class="text-4xl font-bold mb-2">Templates</h1>
+        <p class="text-lg text-muted-foreground">
+          Discover and download community-created dotfiles configurations
+        </p>
+      </div>
+      <a
+        href="/create-template"
+        class="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+      >
+        + Create Template
+      </a>
     </div>
 
     <TemplatesBrowser client:load />
