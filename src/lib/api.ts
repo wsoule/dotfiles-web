@@ -21,6 +21,16 @@ export interface PackageConfig {
   pre_install?: string[];
 }
 
+// Global Hooks
+export interface Hooks {
+  pre_install?: string[];
+  post_install?: string[];
+  pre_sync?: string[];
+  post_sync?: string[];
+  pre_stow?: string[];
+  post_stow?: string[];
+}
+
 // Template Types
 export interface Template {
   taps: string[];
@@ -34,6 +44,7 @@ export interface Template {
   public: boolean;
   featured: boolean;
   organization_id?: string;
+  hooks?: Hooks;
   package_configs?: Record<string, PackageConfig>;
 }
 

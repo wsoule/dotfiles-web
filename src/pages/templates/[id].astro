@@ -93,6 +93,51 @@ const API_BASE_URL = import.meta.env.PUBLIC_API_URL || "http://localhost:8080";
               </div>
             </div>
 
+            <!-- Global Hooks Card -->
+            ${template.hooks ? `
+            <div class="grid gap-6 mb-6">
+              <div class="rounded-lg border bg-card">
+                <div class="p-6">
+                  <h3 class="text-lg font-semibold mb-4">🪝 Global Hooks</h3>
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    ${template.hooks.pre_install && template.hooks.pre_install.length > 0 ? `
+                      <div>
+                        <p class="text-sm font-medium mb-2">Pre-Install</p>
+                        ${template.hooks.pre_install.map(hook => `
+                          <code class="block text-xs bg-muted rounded p-2 mb-1">${hook}</code>
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                    ${template.hooks.post_install && template.hooks.post_install.length > 0 ? `
+                      <div>
+                        <p class="text-sm font-medium mb-2">Post-Install</p>
+                        ${template.hooks.post_install.map(hook => `
+                          <code class="block text-xs bg-muted rounded p-2 mb-1">${hook}</code>
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                    ${template.hooks.pre_stow && template.hooks.pre_stow.length > 0 ? `
+                      <div>
+                        <p class="text-sm font-medium mb-2">Pre-Stow</p>
+                        ${template.hooks.pre_stow.map(hook => `
+                          <code class="block text-xs bg-muted rounded p-2 mb-1">${hook}</code>
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                    ${template.hooks.post_stow && template.hooks.post_stow.length > 0 ? `
+                      <div>
+                        <p class="text-sm font-medium mb-2">Post-Stow</p>
+                        ${template.hooks.post_stow.map(hook => `
+                          <code class="block text-xs bg-muted rounded p-2 mb-1">${hook}</code>
+                        `).join('')}
+                      </div>
+                    ` : ''}
+                  </div>
+                </div>
+              </div>
+            </div>
+            ` : ''}
+
             <div class="grid gap-6 md:grid-cols-2">
               <!-- Packages Card -->
               <div class="rounded-lg border bg-card">

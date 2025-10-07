@@ -133,10 +133,60 @@ import {
         </CardContent>
       </Card>
 
+      <!-- Global Hooks -->
+      <Card>
+        <CardHeader>
+          <CardTitle>Global Hooks (Optional)</CardTitle>
+          <CardDescription>
+            Commands that run at specific lifecycle events (one per line)
+          </CardDescription>
+        </CardHeader>
+        <CardContent class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Pre-Install</label>
+              <textarea
+                id="template-hooks-pre-install"
+                placeholder="brew update"
+                rows="3"
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+              ></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Post-Install</label>
+              <textarea
+                id="template-hooks-post-install"
+                placeholder="echo '✅ Installation complete!'"
+                rows="3"
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+              ></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Pre-Stow</label>
+              <textarea
+                id="template-hooks-pre-stow"
+                placeholder="echo '🔗 Creating symlinks...'"
+                rows="3"
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+              ></textarea>
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Post-Stow</label>
+              <textarea
+                id="template-hooks-post-stow"
+                placeholder="echo '✅ Dotfiles stowed!'"
+                rows="3"
+                class="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 font-mono"
+              ></textarea>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       <!-- Package Hooks -->
       <Card>
         <CardHeader>
-          <CardTitle>Package Hooks (Optional)</CardTitle>
+          <CardTitle>Package-Specific Hooks (Optional)</CardTitle>
           <CardDescription>
             Add post-install commands for specific packages. Format: package:command (one per line)
           </CardDescription>
@@ -275,6 +325,23 @@ import {
         .filter(Boolean);
       const isPublic = document.getElementById('template-public').checked;
 
+      // Parse global hooks
+      const parseHookField = (id) => {
+        const value = document.getElementById(id)?.value || '';
+        return value.split('\n').map(line => line.trim()).filter(Boolean);
+      };
+
+      const preInstall = parseHookField('template-hooks-pre-install');
+      const postInstall = parseHookField('template-hooks-post-install');
+      const preStow = parseHookField('template-hooks-pre-stow');
+      const postStow = parseHookField('template-hooks-post-stow');
+
+      const hooks = {};
+      if (preInstall.length > 0) hooks.pre_install = preInstall;
+      if (postInstall.length > 0) hooks.post_install = postInstall;
+      if (preStow.length > 0) hooks.pre_stow = preStow;
+      if (postStow.length > 0) hooks.post_stow = postStow;
+
       // Parse package hooks
       const packageHooksInput = document.getElementById('template-package-hooks').value;
       const packageConfigs = {};
@@ -314,6 +381,7 @@ import {
         stow: stow,
         public: isPublic,
         featured: false,
+        hooks: Object.keys(hooks).length > 0 ? hooks : undefined,
         package_configs: Object.keys(packageConfigs).length > 0 ? packageConfigs : undefined
       };
 
